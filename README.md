@@ -1,2 +1,2 @@
-# test_rep_students
-This repo is for training students
+# Titanic Machine Learning Project with Django UI
+
