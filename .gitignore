@@ -1,4 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+*.pyo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django stuff
 *.log
+db.sqlite3
+staticfiles/
+media/
+local_settings.py
+
+# IDE & editor
+.vscode/
+.idea/
+*.swp
+
+# Environment variables
 .env
+
+# Distribution / packaging
+build/
 dist/
-sec.txt
+*.bak
