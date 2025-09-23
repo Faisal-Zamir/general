@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load widget_tweaks %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -145,65 +146,65 @@
                 <div class="col-lg-8">
                     <div class="form-container">
                         <h3 class="mb-4">Passenger Details</h3>
-                        <form id="predictionForm">
+                        <form method="post" id="predictionForm">
+                            {% csrf_token %}
+                            
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Passenger Class</label>
-                                    <select class="form-select" aria-label="Passenger class">
-                                        <option selected>Select class</option>
-                                        <option value="1">First Class</option>
-                                        <option value="2">Second Class</option>
-                                        <option value="3">Third Class</option>
-                                    </select>
+                                    {{ form.pclass|add_class:"form-select" }}
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Gender</label>
-                                    <select class="form-select" aria-label="Gender">
-                                        <option selected>Select gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                    </select>
+                                    {{ form.gender|add_class:"form-select" }}
                                 </div>
                             </div>
                             
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Age</label>
-                                    <input type="number" class="form-control" placeholder="Enter age">
+                                    {{ form.age|add_class:"form-control" }}
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Fare ($)</label>
-                                    <input type="number" step="0.01" class="form-control" placeholder="Enter fare">
+                                    {{ form.fare|add_class:"form-control" }}
                                 </div>
                             </div>
                             
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Siblings/Spouses Aboard</label>
-                                    <input type="number" class="form-control" placeholder="Enter number">
+                                    {{ form.sibsp|add_class:"form-control" }}
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Parents/Children Aboard</label>
-                                    <input type="number" class="form-control" placeholder="Enter number">
+                                    {{ form.parch|add_class:"form-control" }}
                                 </div>
                             </div>
                             
-                            <div class="row mb-4">
-                                <div class="col-md-12">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
                                     <label class="form-label">Port of Embarkation</label>
-                                    <select class="form-select" aria-label="Embarkation port">
-                                        <option selected>Select port</option>
-                                        <option value="C">Cherbourg</option>
-                                        <option value="Q">Queenstown</option>
-                                        <option value="S">Southampton</option>
-                                    </select>
+                                    {{ form.embarked|add_class:"form-select" }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Cabin Deck</label>
+                                    {{ form.cabin_deck|add_class:"form-select" }}
                                 </div>
                             </div>
+                            <div class="row mb-3">
+                            <div class="col-md-6">
+                            <label class="form-label">Title</label>
+                            {{ form.title|add_class:"form-select" }}
+                            </div>
+                            </div>                  
                             
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-predict btn-lg">Predict Survival</button>
                             </div>
                         </form>
+
+
                     </div>
                 </div>
                 
@@ -216,7 +217,7 @@
                             <i class="bi bi-check-circle-fill"></i>
                         </div>
                         <h4 class="survived">Survived</h4>
-                        <p class="text-muted">Probability: 87.3%</p>
+                        <p class="text-muted">Probability: {{ prob }}%</p>
                     </div>
                     
                     <!-- Performance Card -->
@@ -224,19 +225,19 @@
                         <h4 class="mb-3">Model Performance</h4>
                         <div class="row text-center">
                             <div class="col-6 mb-3">
-                                <div class="metric-value">82.5%</div>
+                                <div class="metric-value">{{ metrics.accuracy }}%</div>
                                 <div>Accuracy</div>
                             </div>
                             <div class="col-6 mb-3">
-                                <div class="metric-value">79.8%</div>
+                                <div class="metric-value">{{ metrics.precision }}%</div>
                                 <div>Precision</div>
                             </div>
                             <div class="col-6">
-                                <div class="metric-value">84.2%</div>
+                                <div class="metric-value">{{ metrics.recall }}%</div>
                                 <div>Recall</div>
                             </div>
                             <div class="col-6">
-                                <div class="metric-value">81.9%</div>
+                                <div class="metric-value">{{ metrics.f1 }}%</div>
                                 <div>F1 Score</div>
                             </div>
                         </div>
@@ -264,39 +265,98 @@
             </div>
         </div>
     </footer>
+    <h1>{{pre}}</h1>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Simple form validation and interaction
-        document.getElementById('predictionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // In a real application, you would send the form data to your Django backend
-            // and update the result section with the prediction
-            
-            // For demonstration purposes, we'll just toggle the result
-            const resultIcon = document.querySelector('.result-icon');
-            const resultText = document.querySelector('h4');
-            const probability = document.querySelector('.text-muted');
-            
-            if (resultText.classList.contains('survived')) {
-                resultIcon.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
-                resultText.textContent = 'Did Not Survive';
-                resultText.classList.remove('survived');
-                resultText.classList.add('not-survived');
-                resultIcon.classList.remove('survived');
-                resultIcon.classList.add('not-survived');
-                probability.textContent = 'Probability: 12.7%';
-            } else {
+  <script>
+document.getElementById('predictionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const resultIcon = document.querySelector('.result-icon');
+    const resultText = document.querySelector('.result-container h4') || document.querySelector('h4');
+    const probability = document.querySelector('.text-muted');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Show immediate UI feedback
+    resultIcon.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+    resultText.textContent = 'Calculating...';
+    resultText.classList.remove('survived', 'not-survived');
+    probability.textContent = '';
+
+    // Disable button to prevent double-clicks
+    submitBtn.disabled = true;
+
+    // Build FormData from the form
+    const formData = new FormData(form);
+
+    // Fetch target: use form.action if set, otherwise current page
+    const url = form.action || window.location.href;
+
+    // Get CSRF token value from hidden input inserted by {% csrf_token %}
+    const csrfTokenElem = document.querySelector('[name=csrfmiddlewaretoken]');
+    const csrfToken = csrfTokenElem ? csrfTokenElem.value : null;
+
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',   // flag as AJAX
+            'X-CSRFToken': csrfToken                // required for Django
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not OK: ' + response.status);
+        }
+        return response.json();  // Expect JSON response from your updated view
+    })
+    .then(data => {
+        console.log('Response data:', data);  // Debug log
+        
+        // Handle the JSON response from your updated Django view
+        if (data.success) {
+            const survived = parseInt(data.survived, 10);
+            const probSurv = data.prob_surv;   // Probability of survival
+            const probNot = data.prob_not;     // Probability of not surviving
+
+            if (survived === 1) {
                 resultIcon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
                 resultText.textContent = 'Survived';
                 resultText.classList.remove('not-survived');
                 resultText.classList.add('survived');
                 resultIcon.classList.remove('not-survived');
                 resultIcon.classList.add('survived');
-                probability.textContent = 'Probability: 87.3%';
+                probability.textContent = `Survival Probability: ${probSurv}%`;
+            } else {
+                resultIcon.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+                resultText.textContent = 'Did Not Survive';
+                resultText.classList.remove('survived');
+                resultText.classList.add('not-survived');
+                resultIcon.classList.remove('survived');
+                resultIcon.classList.add('not-survived');
+                probability.textContent = `Survival Probability: ${probSurv}%`;
             }
-        });
-    </script>
+        } else {
+            // Backend returned success: false or has error message
+            resultIcon.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i>';
+            resultText.textContent = data.error || 'Prediction failed';
+            resultText.classList.add('not-survived');
+            probability.textContent = '';
+        }
+    })
+    .catch(err => {
+        console.error('Fetch error:', err);
+        resultIcon.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i>';
+        resultText.textContent = 'Error - try again';
+        resultText.classList.add('not-survived');
+        probability.textContent = '';
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+    });
+});
+</script>
+
 </body>
 </html>
