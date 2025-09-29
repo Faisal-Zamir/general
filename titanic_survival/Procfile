@@ -1,0 +1,1 @@
+web: gunicorn titanic_survival.wsgi
